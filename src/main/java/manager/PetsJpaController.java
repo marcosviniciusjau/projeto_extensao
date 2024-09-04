@@ -1,0 +1,88 @@
+package manager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceException;
+
+import manager.exceptions.NonexistentEntityException;
+import manager.exceptions.PreexistingEntityException;
+import model.Pets;
+public class PetsJpaController implements Serializable {
+    public PetsJpaController(EntityManagerFactory emf){
+        this.emf = emf;
+    }
+    
+    private EntityManagerFactory emf = null;
+    
+    public EntityManager getEntityManager(){
+        return emf.createEntityManager();
+    }
+    public void create(Pets pet) throws NonexistentEntityException, Exception{
+          EntityManager em = null;
+	        try {
+									em = getEntityManager();
+									em.getTransaction().begin();
+									em.persist(pet);
+									em.getTransaction().commit();
+            System.out.println("Pet inserido com sucesso");
+               } catch(Exception ex){
+                   if(pet.getName()!= null){
+                       throw new PreexistingEntityException("Pet" + pet + "already exits", ex);
+                   }
+                   throw ex;
+               } finally {
+                    if (em != null){
+                        em.close();
+                    }
+                }
+    }
+    public void destroy(int id) throws NonexistentEntityException
+		{
+	        EntityManager em = null;
+	        try {
+		               em = getEntityManager();
+		               em.getTransaction().begin();
+		               Pets pet;
+		               try {
+ 
+			                     pet = em.getReference(Pets.class, id);
+			                     pet.getName();
+		                   } catch (EntityNotFoundException enfe) {
+			                       throw new NonexistentEntityException("....", enfe);
+		                   }	
+		               em.remove(pet);
+		               em.getTransaction().commit();
+	        } finally {
+		               if (em != null)
+		               em.close();
+	        }
+  }
+
+    public List<Pets> selectAll(){  
+        List<Pets> list = new ArrayList<>();
+        EntityManager em = null;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            list = em.createQuery("SELECT p FROM Pets p", Pets.class).getResultList();
+            
+            if(list.isEmpty()){
+            System.out.println("Ainda não foi inserido nenhum pet");
+        }
+        }catch(PersistenceException ex){
+            System.out.println("Erro: "+ex);
+        }
+        finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return list;
+    
+      }
+}

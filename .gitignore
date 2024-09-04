@@ -1,0 +1,5 @@
+target/classes/dao/GenericDAO.class
+target/classes/META-INF/persistence.xml
+pom.xml
+src/main/resources/*
+src/main/java/dao/GenericDAO.java
