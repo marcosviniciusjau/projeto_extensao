@@ -26,10 +26,11 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Pets.findAll", query = "SELECT p FROM Pets p"),
     @NamedQuery(name = "Pets.findById", query = "SELECT p FROM Pets p WHERE p.id = :id"),
     @NamedQuery(name = "Pets.findByAdoptionDate", query = "SELECT p FROM Pets p WHERE p.adoptionDate = :adoptionDate"),
-    @NamedQuery(name = "Pets.findByName", query = "SELECT p FROM Pets p WHERE p.name = :name")})
+    @NamedQuery(name = "Pets.findByName", query = "SELECT p FROM Pets p WHERE p.name = :name"),
+    @NamedQuery(name = "Pets.findByCastrateDate", query = "SELECT p FROM Pets p WHERE p.castrateDate = :castrateDate")})
 public class Pets implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    public static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
     @Column(name = "ID")
@@ -39,10 +40,12 @@ public class Pets implements Serializable {
     public Date adoptionDate;
     @Column(name = "NAME")
     public String name;
+    @Column(name = "CASTRATE_DATE")
+    @Temporal(TemporalType.DATE)
+    public Date castrateDate;
 
     public Pets() {
     }
-    
 
     public Pets(Integer id) {
         this.id = id;
@@ -70,6 +73,14 @@ public class Pets implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Date getCastrateDate() {
+        return castrateDate;
+    }
+
+    public void setCastrateDate(Date castrateDate) {
+        this.castrateDate = castrateDate;
     }
 
     @Override

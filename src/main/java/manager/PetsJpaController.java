@@ -1,6 +1,7 @@
 package manager;
 
 import java.io.Serializable;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +26,11 @@ public class PetsJpaController implements Serializable {
     public void create(Pets pet) throws NonexistentEntityException, Exception{
           EntityManager em = null;
 	        try {
-									em = getEntityManager();
-									em.getTransaction().begin();
-									em.persist(pet);
-									em.getTransaction().commit();
-            System.out.println("Pet inserido com sucesso");
+                    em = getEntityManager();
+                    em.getTransaction().begin();
+                    em.persist(pet);
+                    em.getTransaction().commit();
+                    System.out.println("Pet inserido com sucesso");
                } catch(Exception ex){
                    if(pet.getName()!= null){
                        throw new PreexistingEntityException("Pet" + pet + "already exits", ex);
@@ -49,12 +50,11 @@ public class PetsJpaController implements Serializable {
 		               em.getTransaction().begin();
 		               Pets pet;
 		               try {
- 
-			                     pet = em.getReference(Pets.class, id);
-			                     pet.getName();
+                             pet = em.getReference(Pets.class, id);
+			                 pet.getName();
 		                   } catch (EntityNotFoundException enfe) {
-			                       throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
-		                   }	
+			                  throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+		            }	
 		               em.remove(pet);
 		               em.getTransaction().commit();
 	        } finally {
@@ -84,8 +84,33 @@ public class PetsJpaController implements Serializable {
                em.close();
     }
     return pet;
-}
+  }
 
+  public Pets castrate(String name, Date castrateDate) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Pets pet;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.name = :name", Pets.class).setParameter("name", name)
+                .getSingleResult();
+         
+                pet.getName();
+
+                pet.setCastrateDate(castrateDate);
+                   } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+                   }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return pet;
+  }
     public List<Pets> selectAll(){  
         List<Pets> list = new ArrayList<>();
         EntityManager em = null;

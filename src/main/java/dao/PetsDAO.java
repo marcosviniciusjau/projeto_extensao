@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -81,7 +82,18 @@ import model.Pets;
                                 PreparedStatement ps = getConnection().prepareStatement(
                                  "UPDATE PETS SET NAME = ?, ADOPTION_DATE = ? "+" WHERE ID = ?");
                                ps.setString(2, entity.name);
-                               ps.setInt(3, entity.id);
+                               ps.setInt(3, entity.id);ps.setDate(3, new java.sql.Date(entity.adoptionDate.getTime()));
+                               ps.executeUpdate();
+                               closeStatement(ps);
+                             } catch (Exception e) { }
+               }  
+							@Override
+               public void insertCastrateDate(Pets entity, Date castrateDate) {
+                             try {
+                                PreparedStatement ps = getConnection().prepareStatement(
+                                 "UPDATE PETS SET CASTRATE_DATE = ?"+" WHERE NAME = ?");
+                               ps.setString(2, entity.name);
+															 ps.setDate(3, new java.sql.Date(entity.castrateDate.getTime()));
                                ps.executeUpdate();
                                closeStatement(ps);
                              } catch (Exception e) { }
