@@ -53,7 +53,7 @@ public class PetsJpaController implements Serializable {
 			                     pet = em.getReference(Pets.class, id);
 			                     pet.getName();
 		                   } catch (EntityNotFoundException enfe) {
-			                       throw new NonexistentEntityException("....", enfe);
+			                       throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
 		                   }	
 		               em.remove(pet);
 		               em.getTransaction().commit();
@@ -62,6 +62,29 @@ public class PetsJpaController implements Serializable {
 		               em.close();
 	        }
   }
+  public Pets select(String name) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Pets pet;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                         pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.name = :name", Pets.class).setParameter("name", name)
+                         .getSingleResult();
+         
+                         pet.getName();
+                   } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+                   }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return pet;
+}
 
     public List<Pets> selectAll(){  
         List<Pets> list = new ArrayList<>();

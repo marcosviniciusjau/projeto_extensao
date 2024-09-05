@@ -3,6 +3,7 @@ D:\repos\NetBeansProjects\projeto_extensao\src\main\java\manager\exceptions\Ille
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\manager\exceptions\PreexistingEntityException.java
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\br\edu\petsystem\SystemPet.java
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\dao\GenericDAO.java
+D:\repos\NetBeansProjects\projeto_extensao\src\main\java\manager\exceptions\TypingNumberException.java
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\model\Pets.java
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\manager\PetsJpaController.java
 D:\repos\NetBeansProjects\projeto_extensao\src\main\java\dao\PetsDAO.java

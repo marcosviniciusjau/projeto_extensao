@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import javax.persistence.Persistence;
 
 import manager.PetsJpaController;
+import manager.exceptions.NonexistentEntityException;
 import model.Pets;
 
 public class SystemPet {
@@ -16,59 +17,50 @@ public class SystemPet {
   private static final BufferedReader entry =   
       new BufferedReader(new InputStreamReader(System.in));
       
-    Pets pet = new Pets();
-  private void select(Pets pet){
-           System.out.println("Pet: "+pet.getName()+
+  private void selectModel(Pets pet){
+      System.out.println("Pet: "+pet.getName()+
                     "\tID: " +pet.getId()+
                      "\tData de adoção: "+pet.getAdoptionDate()+
                      "\n==========================");
-  }
-  public void selectAll(){
-          dao.selectAll().forEach(pet->select(pet));
-  }
+    }
+  
 
-  public void insertId() throws Exception{
-    System.out.println("ID:");
-    try {
-        var id = Integer.parseInt(entry.readLine());
-        pet.setId(id);
-    } catch (NumberFormatException e) { 
-        System.out.println("O ID precisa ser um número");
-        System.exit(400);
-    } 
-  }
-  public void insertName() throws Exception{
+  public void select() throws Exception{
+    Pets pet = new Pets();
+    System.out.println("Nome:");
     var name = entry.readLine();
+    pet = dao.select(name);
+      System.out.println("Pet: "+pet.getName()+
+                    "\tID: " +pet.getId()+
+                     "\tData de adoção: "+pet.getAdoptionDate()+
+                     "\n==========================");
+    }
+  
+  public void selectAll() throws Exception{
     try {
-        System.out.println("Nome:");
-        pet.setName(name); 
-    } catch (Exception e) { 
-        if(name == null){
-            System.out.println("Nome obrigatório");
-        }
-        System.out.println(e.getLocalizedMessage());
-    } 
+      dao.selectAll().forEach(pet->{
+        selectModel(pet);
+         });
+    } catch (Exception e) {
+      throw new NonexistentEntityException("Nenhum pet existesnte");
+    }        
   }
-  public void insertDate() throws Exception{
-    try {
-        System.out.println("Data de adoção:");
-        String dataEntrada = entry.readLine();
-        SimpleDateFormat formatoBrasileiro = new SimpleDateFormat("dd/MM/yyyy");
 
-         java.util.Date data = formatoBrasileiro.parse(dataEntrada);
-
-         java.sql.Date dataSQL = new java.sql.Date(data.getTime());
-
-         pet.setAdoptionDate(dataSQL);
-     } catch (ParseException e) {
-         System.out.println("Data no formato inválido");
-     }
-  }
   public void insertPet() throws Exception{  
-      insertId();
-      insertName();
-      insertDate();
-      dao.create(pet);
+      Pets pets = new Pets();
+      System.out.println("ID:");
+      pets.setId(Integer.parseInt(entry.readLine()));
+      System.out.println("Nome:");
+      pets.setName(entry.readLine());
+      System.out.println("Data de adoção:");
+      var dataEntrada = entry.readLine();
+    
+      SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+      java.util.Date date = sdf.parse(dataEntrada);
+      java.sql.Date dataSQL = new java.sql.Date(date.getTime());
+       pets.setAdoptionDate(dataSQL);
+
+      dao.create(pets);
 }
            
   public void deletePet() throws Exception{
@@ -80,16 +72,17 @@ public class SystemPet {
            SystemPet systemPet = new SystemPet();
            while(true){
                      System.out.println(
-                                       "1-Listar\t2-Inserir\t3-Excluir\t0-Sair");
+                                       "1-Listar\t2-Listar por nome\t3-Inserir\t4-Excluir\t0-Sair");
                      int opcao = Integer.parseInt(entry.readLine());
                      if(opcao==0)
                         break;
                      switch(opcao){
                         case 1: systemPet.selectAll(); break;
-                        case 2: systemPet.insertPet(); break;
-                        case 3: systemPet.deletePet(); break;
+                        case 2: systemPet.select(); break;
+                        case 3: systemPet.insertPet(); break;
+                        case 4: systemPet.deletePet(); break;
                         default:  System.out.println("Opção inválida"); break;
                     }
            }
      }	
-} 
+    }
