@@ -42,7 +42,7 @@ public class SystemPet {
         selectModel(pet);
          });
     } catch (Exception e) {
-      throw new NonexistentEntityException("Nenhum pet existesnte");
+      throw new NonexistentEntityException("Nenhum pet existente");
     }        
   }
 
@@ -62,7 +62,22 @@ public class SystemPet {
 
       dao.create(pets);
 }
-           
+
+public void insertCastrateDate() throws Exception{  
+  Pets pets = new Pets();  
+  System.out.println("Nome:");
+  var name = entry.readLine();
+  System.out.println("Data de castração:");
+  var dataEntrada = entry.readLine();
+
+  SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+  java.util.Date date = sdf.parse(dataEntrada);
+  java.sql.Date dataSQL = new java.sql.Date(date.getTime());
+   pets.setCastrateDate(dataSQL);
+
+  dao.castrate(name,dataSQL);
+}
+             
   public void deletePet() throws Exception{
           System.out.println("ID:");
           int id = Integer.parseInt(entry.readLine());
@@ -80,7 +95,8 @@ public class SystemPet {
                         case 1: systemPet.selectAll(); break;
                         case 2: systemPet.select(); break;
                         case 3: systemPet.insertPet(); break;
-                        case 4: systemPet.deletePet(); break;
+                        case 4: systemPet.insertCastrateDate(); break;
+                        case 5: systemPet.deletePet(); break;
                         default:  System.out.println("Opção inválida"); break;
                     }
            }

@@ -9,6 +9,8 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -21,28 +23,30 @@ import javax.persistence.TemporalType;
  * @author Marcos
  */
 @Entity
-@Table(name = "PETS")
+@Table(name = "pets")
 @NamedQueries({
     @NamedQuery(name = "Pets.findAll", query = "SELECT p FROM Pets p"),
     @NamedQuery(name = "Pets.findById", query = "SELECT p FROM Pets p WHERE p.id = :id"),
-    @NamedQuery(name = "Pets.findByAdoptionDate", query = "SELECT p FROM Pets p WHERE p.adoptionDate = :adoptionDate"),
     @NamedQuery(name = "Pets.findByName", query = "SELECT p FROM Pets p WHERE p.name = :name"),
-    @NamedQuery(name = "Pets.findByCastrateDate", query = "SELECT p FROM Pets p WHERE p.castrateDate = :castrateDate")})
+    @NamedQuery(name = "Pets.findByCastrateDate", query = "SELECT p FROM Pets p WHERE p.castrateDate = :castrateDate"),
+    @NamedQuery(name = "Pets.findByAdoptionDate", query = "SELECT p FROM Pets p WHERE p.adoptionDate = :adoptionDate")})
 public class Pets implements Serializable {
 
-    public static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "ID")
+    @Column(name = "id")
     public Integer id;
-    @Column(name = "ADOPTION_DATE")
-    @Temporal(TemporalType.DATE)
-    public Date adoptionDate;
-    @Column(name = "NAME")
+    @Basic(optional = false)
+    @Column(name = "name")
     public String name;
-    @Column(name = "CASTRATE_DATE")
+    @Column(name = "castrate_date")
     @Temporal(TemporalType.DATE)
     public Date castrateDate;
+    @Column(name = "adoption_date")
+    @Temporal(TemporalType.DATE)
+    public Date adoptionDate;
 
     public Pets() {
     }
@@ -51,20 +55,17 @@ public class Pets implements Serializable {
         this.id = id;
     }
 
+    public Pets(Integer id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Date getAdoptionDate() {
-        return adoptionDate;
-    }
-
-    public void setAdoptionDate(Date adoptionDate) {
-        this.adoptionDate = adoptionDate;
     }
 
     public String getName() {
@@ -81,6 +82,14 @@ public class Pets implements Serializable {
 
     public void setCastrateDate(Date castrateDate) {
         this.castrateDate = castrateDate;
+    }
+
+    public Date getAdoptionDate() {
+        return adoptionDate;
+    }
+
+    public void setAdoptionDate(Date adoptionDate) {
+        this.adoptionDate = adoptionDate;
     }
 
     @Override

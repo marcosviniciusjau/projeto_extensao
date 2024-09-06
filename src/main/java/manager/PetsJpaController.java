@@ -101,9 +101,9 @@ public class PetsJpaController implements Serializable {
                 pet.getName();
 
                 pet.setCastrateDate(castrateDate);
-                   } catch (EntityNotFoundException enfe) {
+                } catch (EntityNotFoundException enfe) {
                            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
-                   }	
+                }	
                em.getTransaction().commit();
     } finally {
                if (em != null)
