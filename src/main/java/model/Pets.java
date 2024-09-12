@@ -5,13 +5,14 @@
 package model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -26,76 +27,89 @@ import javax.persistence.TemporalType;
 @Table(name = "pets")
 @NamedQueries({
     @NamedQuery(name = "Pets.findAll", query = "SELECT p FROM Pets p"),
-    @NamedQuery(name = "Pets.findById", query = "SELECT p FROM Pets p WHERE p.id = :id"),
-    @NamedQuery(name = "Pets.findByName", query = "SELECT p FROM Pets p WHERE p.name = :name"),
-    @NamedQuery(name = "Pets.findByCastrateDate", query = "SELECT p FROM Pets p WHERE p.castrateDate = :castrateDate"),
-    @NamedQuery(name = "Pets.findByAdoptionDate", query = "SELECT p FROM Pets p WHERE p.adoptionDate = :adoptionDate")})
+    @NamedQuery(name = "Pets.findByDataCastracao", query = "SELECT p FROM Pets p WHERE p.dataCastracao = :dataCastracao"),
+    @NamedQuery(name = "Pets.findByDataAdocao", query = "SELECT p FROM Pets p WHERE p.dataAdocao = :dataAdocao"),
+    @NamedQuery(name = "Pets.findByCodigoMicrochip", query = "SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip"),
+    @NamedQuery(name = "Pets.findByPeso", query = "SELECT p FROM Pets p WHERE p.peso = :peso")})
 public class Pets implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    @Basic(optional = false)
+    @Column(name = "data_castracao")
+    @Temporal(TemporalType.DATE)
+    public Date dataCastracao;
+    @Column(name = "data_adocao")
+    @Temporal(TemporalType.DATE)
+    public Date dataAdocao;
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "id")
-    public Integer id;
+    @Column(name = "codigo_microchip")
+    public Integer codigoMicrochip;
+    // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
     @Basic(optional = false)
-    @Column(name = "name")
-    public String name;
-    @Column(name = "castrate_date")
-    @Temporal(TemporalType.DATE)
-    public Date castrateDate;
-    @Column(name = "adoption_date")
-    @Temporal(TemporalType.DATE)
-    public Date adoptionDate;
+    @Column(name = "peso")
+    public BigDecimal peso;
+    @JoinColumn(name = "adotante_cpf", referencedColumnName = "cpf")
+    @ManyToOne
+    public Adotante adotanteCpf;
 
     public Pets() {
     }
 
-    public Pets(Integer id) {
-        this.id = id;
+    public Pets(Integer codigoMicrochip) {
+        this.codigoMicrochip = codigoMicrochip;
     }
 
-    public Pets(Integer id, String name) {
-        this.id = id;
-        this.name = name;
+    public Pets(Integer codigoMicrochip, Date dataCastracao, BigDecimal peso) {
+        this.codigoMicrochip = codigoMicrochip;
+        this.dataCastracao = dataCastracao;
+        this.peso = peso;
     }
 
-    public Integer getId() {
-        return id;
+    public Date getDataCastracao() {
+        return dataCastracao;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setDataCastracao(Date dataCastracao) {
+        this.dataCastracao = dataCastracao;
     }
 
-    public String getName() {
-        return name;
+    public Date getDataAdocao() {
+        return dataAdocao;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setDataAdocao(Date dataAdocao) {
+        this.dataAdocao = dataAdocao;
     }
 
-    public Date getCastrateDate() {
-        return castrateDate;
+    public Integer getCodigoMicrochip() {
+        return codigoMicrochip;
     }
 
-    public void setCastrateDate(Date castrateDate) {
-        this.castrateDate = castrateDate;
+    public void setCodigoMicrochip(Integer codigoMicrochip) {
+        this.codigoMicrochip = codigoMicrochip;
     }
 
-    public Date getAdoptionDate() {
-        return adoptionDate;
+    public BigDecimal getPeso() {
+        return peso;
     }
 
-    public void setAdoptionDate(Date adoptionDate) {
-        this.adoptionDate = adoptionDate;
+    public void setPeso(BigDecimal peso) {
+        this.peso = peso;
+    }
+
+    public Adotante getAdotanteCpf() {
+        return adotanteCpf;
+    }
+
+    public void setAdotanteCpf(String cpf) {
+        this.adotanteCpf = new Adotante(cpf);
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
+        hash += (codigoMicrochip != null ? codigoMicrochip.hashCode() : 0);
         return hash;
     }
 
@@ -106,7 +120,7 @@ public class Pets implements Serializable {
             return false;
         }
         Pets other = (Pets) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.codigoMicrochip == null && other.codigoMicrochip != null) || (this.codigoMicrochip != null && !this.codigoMicrochip.equals(other.codigoMicrochip))) {
             return false;
         }
         return true;
@@ -114,7 +128,7 @@ public class Pets implements Serializable {
 
     @Override
     public String toString() {
-        return "model.Pets[ id=" + id + " ]";
+        return "model.Pets[ codigoMicrochip=" + codigoMicrochip + " ]";
     }
     
 }

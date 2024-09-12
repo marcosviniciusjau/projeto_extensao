@@ -10,11 +10,13 @@ import java.util.List;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityManager;
 import javax.persistence.Persistence;
+
+import manager.exceptions.NonexistentEntityException;
 import model.Pets;
 
- public class PetsDAO extends GenericDAO<Pets, String>{
+ public class PetsDAO extends GenericDAOPets<Pets, String>{
         @Override
-          public void insert(Pets pet) {
+          public synchronized void insertPet(Pets pet) {
 						EntityManagerFactory emf = Persistence.createEntityManagerFactory("ExemploJavaDB01PU");
 						EntityManager em = emf.createEntityManager();
 	        	em.getTransaction().begin();
@@ -28,28 +30,27 @@ import model.Pets;
 						}
       }
        @Override
-         public void delete(String key) {
+         public synchronized void deletePet(String key) {
 					    Connection c1 = null;
 	         try {
-		                c1 = getConnection();
-		                c1.setAutoCommit(false);
-		                PreparedStatement ps = getConnection().prepareStatement(
-					"DELETE FROM PETS WHERE ID = ?");
-		                ps.setString(1, key);
-		                ps.executeUpdate();
-		                c1.commit();
-		                closeStatement(ps);
+		         	c1 = getConnection();
+							c1.setAutoCommit(false);
+							PreparedStatement ps = getConnection().prepareStatement(
+												"DELETE FROM PETS WHERE CODIGO_MICROCHIP = ?");
+							ps.setString(1, key);
+							ps.executeUpdate();
+							c1.commit();
+							closeStatement(ps);
 	         } catch (Exception e) {
-
-		                 if(c1!=null)
-			                       try {
-				                             c1.rollback();
-				                             c1.close();
-			                       } catch (SQLException e2){}
+							if(c1!=null)
+			         try {
+				          c1.rollback();
+				          c1.close();
+			         } catch (SQLException e2){}
 	         }
   }      
 	      @Override
-	      public List<Pets> selectAll() {
+	      public synchronized List<Pets> selectAllPets() {
 		      List<Pets> list = new ArrayList<>();
 		      try {
 					ResultSet r1 = getStatement().executeQuery("SELECT * FROM PETS");
@@ -60,12 +61,12 @@ import model.Pets;
 					return list;      
 	    }
 	         @Override
-	         public Pets select(String key) {
+	         public synchronized Pets selectPet(String key) {
 		                Pets pet = null;
 		                try {
 		                     	  PreparedStatement ps = 
 				                 getConnection().prepareStatement(
-				                 "SELECT * FROM PETS WHERE NAME = ?");
+				                 "SELECT * FROM PETS WHERE NOME = ?");
 			                      ps.setString(1, key);
 			                      ResultSet r1 = ps.executeQuery();
 			                      if (r1.next())
@@ -77,25 +78,36 @@ import model.Pets;
 	         }
                  
                @Override
-               public void update(Pets entity) {
+               public synchronized void updatePet(Pets entity) {
                              try {
                                 PreparedStatement ps = getConnection().prepareStatement(
-                                 "UPDATE PETS SET NAME = ?, ADOPTION_DATE = ? "+" WHERE ID = ?");
-                               ps.setString(2, entity.name);
-                               ps.setInt(3, entity.id);ps.setDate(3, new java.sql.Date(entity.adoptionDate.getTime()));
-                               ps.executeUpdate();
-                               closeStatement(ps);
-                             } catch (Exception e) { }
-               }  
-							@Override
-               public void insertCastrateDate(Pets entity, Date castrateDate) {
-                             try {
-                                PreparedStatement ps = getConnection().prepareStatement(
-                                 "UPDATE PETS SET CASTRATE_DATE = ?"+" WHERE NAME = ?");
-                               ps.setString(2, entity.name);
-															 ps.setDate(3, new java.sql.Date(entity.castrateDate.getTime()));
+                                 "UPDATE PETS SET CODIGO_MICROCHIP = ?, DATA_CASTRACAO = ? ,DATA_ADOCAO = ?, PESO= ? "+" WHERE ID = ?");
+															 ps.setInt(1, entity.codigoMicrochip);
+															 ps.setDate(2, new java.sql.Date(entity.dataCastracao.getTime()));
+															 ps.setDate(3, new java.sql.Date(entity.dataAdocao.getTime()));
+															 ps.setBigDecimal(4, entity.peso);
+														
                                ps.executeUpdate();
                                closeStatement(ps);
                              } catch (Exception e) { }
                } 
-							}
+
+@Override
+							public synchronized void insertPetAdopter(Pets entity,int adotante, Date dataAdocao) {
+														try {
+															 PreparedStatement ps = getConnection().prepareStatement(
+																"UPDATE PETS SET ADOTANTE = ?, DATA_ADOCAO = ?"+" WHERE CODIGO_MICROCHIP = ?");
+																 if(entity.getAdotanteCpf()== null){
+                        throw new NonexistentEntityException("Adotante não encontrado");
+                    }
+															ps.setInt(1, adotante);
+															ps.setInt(2, entity.codigoMicrochip);
+															ps.setDate(3, new java.sql.Date(entity.dataAdocao.getTime()));
+                              
+															ps.executeUpdate();
+															closeStatement(ps);ps.setInt(1, adotante);
+															ps.setInt(2, entity.codigoMicrochip);
+														} catch (Exception e) { }
+							} 
+						 
+}
