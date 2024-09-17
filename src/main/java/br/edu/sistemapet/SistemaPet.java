@@ -3,7 +3,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.zip.DataFormatException;
 
 import javax.persistence.Persistence;
 
@@ -84,13 +86,11 @@ public class SistemaPet {
     try {
         System.out.println("Informe o CPF:");
         CPF = entry.readLine();
+        if(CPF.length() < 11){
+          throw new NumberFormatException("CPF inválido. É necessário 11 digitos.");
+        }
     } catch (IOException e) {
         System.err.println("Erro ao ler o CPF: " + e.getMessage());
-        System.exit(1);
-    } catch (NumberFormatException e) {
-      if(CPF.length() < 11){
-        throw new NumberFormatException("CPF inválido.");
-      }
         System.exit(1);
     }
 }
@@ -105,7 +105,7 @@ private void inputEndereco() throws Exception{
       System.exit(1);
   } catch (Exception e) {
       System.exit(1);
-      throw new Exception("Endereco inválido.");
+      throw new Exception("Endereço inválido.");
   }
 }
 
@@ -113,14 +113,12 @@ private void inputCEP() throws Exception{
   try {
       System.out.println("Informe o CEP:");
       CEP = entry.readLine();
+      if(CEP.length() < 8){
+        throw new NumberFormatException("CEP inválido. É necessário 8 digitos.");
+      }
       adotante.setCep(CEP);
   } catch (IOException e) {
       System.err.println("Erro ao ler o CEP: " + e.getMessage());
-      System.exit(1);
-  } catch (NumberFormatException e) {
-    if(CEP.length() < 8){
-      throw new NumberFormatException("CEP inválido.");
-    }
       System.exit(1);
   }
 }
@@ -128,15 +126,13 @@ private void inputCEP() throws Exception{
 private void inputTelefone() throws Exception{
   try {
       System.out.println("Informe o telefone:");
-      telefone = entry.readLine();
+      telefone = entry.readLine();   
+      if(telefone.length() < 11){
+        throw new NumberFormatException("Telefone inválido.");
+      }
       adotante.setTelefone(telefone);
   } catch (IOException e) {
       System.err.println("Erro ao ler o telefone: " + e.getMessage());
-      System.exit(1);
-  } catch (NumberFormatException e) {
-    if(telefone.length() < 11){
-      throw new NumberFormatException("Telefone inválido.");
-    }
       System.exit(1);
   }
 }
@@ -168,7 +164,13 @@ private void inputTelefone() throws Exception{
   } catch (IOException e) {
     System.err.println("Erro ao ler a data de castração: " + e.getMessage());
     System.exit(1);
-  }
+  }  catch (DataFormatException e) {
+    System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+    System.exit(1);
+  }  catch (ParseException e) {
+  System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+  System.exit(1);
+}
 }
 
   private void inputCodigo() throws Exception{
@@ -197,7 +199,13 @@ private void inputTelefone() throws Exception{
     } catch (IOException e) {
       System.err.println("Erro ao ler a data de castração: " + e.getMessage());
       System.exit(1);
-    }
+    } catch (DataFormatException e) {
+      System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+      System.exit(1);
+    }  catch (ParseException e) {
+    System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+    System.exit(1);
+  }
 }
   
   private void inputDataAdocao() throws Exception{
@@ -213,7 +221,13 @@ private void inputTelefone() throws Exception{
   } catch (IOException e) {
     System.err.println("Erro ao ler a data de castração: " + e.getMessage());
     System.exit(1);
-  }
+  } catch (DataFormatException e) {
+    System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+    System.exit(1);
+  }  catch (ParseException e) {
+  System.err.println("Data no formato inválido. O formato aceito é dd/mm/aaaa");
+  System.exit(1);
+}
 }
 
   private void inputPeso(){
@@ -224,7 +238,10 @@ private void inputTelefone() throws Exception{
     } catch (IOException e) {
       System.err.println("Erro ao ler o peso: " + e.getMessage());
       System.exit(1);
-  }
+  } catch (NumberFormatException e) {
+    System.err.println("Peso inválido, não digite virgulas, use pontos");
+    System.exit(1);
+}
 }
 
   private void selectModelPets(Pets pet){
@@ -253,8 +270,7 @@ private void inputTelefone() throws Exception{
       } catch (Exception e) {
         throw new NonexistentEntityException("Nenhum pet existente");
       }        
-    }
-  
+  }
   public synchronized void insertPet() throws Exception{
       inputCodigo();
       verifyIfExists(codigo_microchip);
@@ -262,7 +278,6 @@ private void inputTelefone() throws Exception{
       inputDataCastracao();
       dao.create(pets);
 }
-
   private void selectModelAdotante(Adotante adotante){
       System.out.println("Adotante: "+adotante.getNome()+
     "\tCPF: " +adotante.getCpf()+
