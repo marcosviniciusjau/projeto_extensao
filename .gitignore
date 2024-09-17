@@ -3,3 +3,5 @@ target/classes/META-INF/persistence.xml
 pom.xml
 src/main/resources/*
 src/main/java/dao/GenericDAO.java
+target/classes/dao/GenericDAOAdotante
+dependency-reduced-pom.xml

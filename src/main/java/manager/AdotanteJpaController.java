@@ -87,7 +87,7 @@ public class AdotanteJpaController implements Serializable {
 		               em.close();
 	        }
   }
-  public Adotante update(String cpf, Date dataNascimento, String endereco, String nome, String cep, String telefone) throws NonexistentEntityException
+  public Adotante updateAll(String cpf, String nome, Date dataNascimento, String endereco, String cep, String telefone) throws NonexistentEntityException
   {
     EntityManager em = null;
     Adotante adotante;
@@ -105,6 +105,136 @@ public class AdotanteJpaController implements Serializable {
                 adotante.setDataNascimento(dataNascimento);
                 adotante.setEndereco(endereco);
                 adotante.setCep(cep);
+                adotante.setTelefone(telefone);
+                } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
+                }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateNome(String cpf, String nome) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                adotante = (Adotante) em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class).setParameter("cpf", cpf)
+                .getSingleResult();
+         
+                adotante.getCpf();
+
+                adotante.setNome(nome);
+                } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
+                }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateDataNascimento(String cpf, Date dataNascimento) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                adotante = (Adotante) em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class).setParameter("cpf", cpf)
+                .getSingleResult();
+         
+                adotante.getCpf();
+
+                adotante.setDataNascimento(dataNascimento);
+                } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
+                }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateEndereco(String cpf, String endereco) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                adotante = (Adotante) em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class).setParameter("cpf", cpf)
+                .getSingleResult();
+         
+                adotante.getCpf();
+
+                adotante.setEndereco(endereco);
+                } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
+                }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateCEP(String cpf, String CEP) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                adotante = (Adotante) em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class).setParameter("cpf", cpf)
+                .getSingleResult();
+         
+                adotante.getCpf();
+
+                adotante.setCep(CEP);
+                } catch (EntityNotFoundException enfe) {
+                           throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
+                }	
+               em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateTelefone(String cpf, String telefone) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               try {
+
+                adotante = (Adotante) em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class).setParameter("cpf", cpf)
+                .getSingleResult();
+         
+                adotante.getCpf();
+
                 adotante.setTelefone(telefone);
                 } catch (EntityNotFoundException enfe) {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);

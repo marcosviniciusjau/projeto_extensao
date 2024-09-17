@@ -25,7 +25,8 @@ public class PetsJpaController implements Serializable {
     public EntityManager getEntityManager(){
         return emf.createEntityManager();
     }
-    public void create(Pets pet) throws NonexistentEntityException, Exception{
+
+    public synchronized void create(Pets pet) throws NonexistentEntityException, Exception{
           EntityManager em = null;
 	        try {
                     em = getEntityManager();
@@ -44,8 +45,9 @@ public class PetsJpaController implements Serializable {
                     }
                 }
     }
-    public void destroy(int codigoMicrochip) throws NonexistentEntityException
-		{
+    
+    public synchronized void destroy(int codigoMicrochip) throws NonexistentEntityException
+	{
 	        EntityManager em = null;
 	        try {
 		               em = getEntityManager();
@@ -64,59 +66,197 @@ public class PetsJpaController implements Serializable {
 		               if (em != null)
 		               em.close();
 	        }
-  }
-  public Pets select(Integer codigo_microchip) throws NonexistentEntityException, PreexistingEntityException
-  {
-    EntityManager em = null;
-    Pets pet;
-    try {
-               em = getEntityManager();
-               em.getTransaction().begin();
-               try {
-
-                         pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
-                         .getSingleResult();
-         
-                         pet.getCodigoMicrochip();
-                   } catch (EntityNotFoundException enfe) {
-                           throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
-                   }	
-               em.getTransaction().commit();
-    } finally {
-               if (em != null)
-               em.close();
+   }
+    
+    public synchronized Pets select(Integer codigo_microchip) throws NonexistentEntityException, PreexistingEntityException
+    {
+        EntityManager em = null;
+        Pets pet;
+        try {
+                em = getEntityManager();
+                em.getTransaction().begin();
+                try {
+                            pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
+                            .getSingleResult();
+            
+                            pet.getCodigoMicrochip();
+                    } catch (NoResultException enfe) {
+                            throw new NonexistentEntityException("Nenhum pet encontrado!");
+                    }	
+                em.getTransaction().commit();
+        } finally {
+                if (em != null)
+                em.close();
+        }
+        return pet;
     }
-    return pet;
-  }
 
-  public Pets update(Integer codigo_microchip, Date dataCastracao, Date dataAdocao, BigDecimal peso) throws NonexistentEntityException
-  {
-    EntityManager em = null;
-    Pets pet;
-    try {
-               em = getEntityManager();
-               em.getTransaction().begin();
-               try {
+    public synchronized Pets updateAll(Integer codigo_microchip, Date dataCastracao, Date dataAdocao, BigDecimal peso) throws NonexistentEntityException, PreexistingEntityException
+    {
+        EntityManager em = null;
+        Pets pet;
+        try {
+                em = getEntityManager();
+                em.getTransaction().begin();
+                try {
+                    pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
+                    .getSingleResult();
+            
+                    pet.getCodigoMicrochip();
 
-                pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
-                .getSingleResult();
-         
-                pet.getCodigoMicrochip();
-
-                pet.setDataCastracao(dataCastracao);
-                pet.setDataAdocao(dataAdocao);
-                pet.setPeso(peso);
-                } catch (EntityNotFoundException enfe) {
-                           throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
-                }	
-               em.getTransaction().commit();
-    } finally {
-               if (em != null)
-               em.close();
+                    pet.setDataCastracao(dataCastracao);
+                    if(pet.getAdotanteCpf() == null){
+                        throw new PreexistingEntityException("Pet não adotado");
+                    }
+                    pet.setDataAdocao(dataAdocao);
+                    pet.setPeso(peso);
+                    } catch (EntityNotFoundException enfe) {
+                            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+                    }	
+                em.getTransaction().commit();
+                System.out.println("Pet atualizado com sucesso");
+        } finally {
+                if (em != null)
+                em.close();
+        }
+        return pet;
     }
-    return pet;
-  }
-    public List<Pets> selectAll(){  
+
+    public synchronized Pets updateAdoptionDate(Integer codigo_microchip, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            
+            try {
+                pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
+                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                throw new NonexistentEntityException("Pet não encontrado");
+            }
+            pet.getCodigoMicrochip();
+            if(pet.getAdotanteCpf() == null){
+                throw new PreexistingEntityException("Pet não adotado");
+            }
+            pet.setDataAdocao(dataAdocao);
+
+            em.getTransaction().commit(); 
+
+            System.out.println("Data de adocão atualizada com sucesso");
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return pet;
+    }
+
+    public synchronized Pets updateCastrateDate(Integer codigo_microchip, Date dataCastracao) throws NonexistentEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            
+            try {
+                pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
+                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                throw new NonexistentEntityException("Pet não encontrado");
+            }
+            pet.getCodigoMicrochip();
+            pet.setDataCastracao(dataCastracao);
+
+            em.getTransaction().commit(); 
+            
+            System.out.println("Data de castração atualizada com sucesso");
+
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return pet;
+    }
+
+    public synchronized Pets updateDates(Integer codigo_microchip, Date dataCastracao, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            
+            try {
+                pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
+                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                throw new NonexistentEntityException("Pet não encontrado");
+            }
+            pet.getCodigoMicrochip();
+            pet.setDataCastracao(dataCastracao);
+            if(pet.getAdotanteCpf() == null){
+                throw new PreexistingEntityException("Pet não adotado");
+            }
+            pet.setDataAdocao(dataAdocao);
+
+            em.getTransaction().commit(); 
+            
+            System.out.println("Data de adocão e castração atualizada com sucesso");
+
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return pet;
+    }
+
+    public synchronized Pets updateWeight(Integer codigo_microchip, BigDecimal peso) throws NonexistentEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            
+            try {
+                pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
+                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                throw new NonexistentEntityException("Pet não encontrado");
+            }
+            pet.getCodigoMicrochip();
+            pet.setPeso(peso);
+
+            em.getTransaction().commit(); 
+            
+            System.out.println("Peso atualizado com sucesso");
+
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return pet;
+    }
+
+    public synchronized List<Pets> selectAll(){  
         List<Pets> list = new ArrayList<>();
         EntityManager em = null;
         try {
@@ -138,21 +278,19 @@ public class PetsJpaController implements Serializable {
         return list;
     
       }
-      public synchronized Pets verify(Integer codigo_microchip) throws NonexistentEntityException {
+  
+    public synchronized Pets verify(Integer codigo_microchip) throws NonexistentEntityException {
         EntityManager em = null;
-        Pets pet = null; // Inicializa o objeto como null
+        Pets pet = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
     
             try {
-                // Tenta obter o resultado
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
                         .setParameter("codigoMicrochip", codigo_microchip)
                         .getSingleResult();
             } catch (NoResultException nre) {
-                // Se não houver resultado, continua normalmente
-                System.out.println("Nenhum pet encontrado com o nome: " + codigo_microchip);
             }
     
             em.getTransaction().commit();
@@ -161,10 +299,10 @@ public class PetsJpaController implements Serializable {
                 em.close();
             }
         }
-        return pet; // Retorna null se nenhum pet for encontrado
+        return pet;
     }
     
-      public Pets adopt(Integer codigo_microchip, Date dataAdocao, String cpf) throws NonexistentEntityException {
+    public synchronized Pets adopt(Integer codigo_microchip, Date dataAdocao, String cpf) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
