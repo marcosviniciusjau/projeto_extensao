@@ -5,3 +5,6 @@ src/main/resources/*
 src/main/java/dao/GenericDAO.java
 target/classes/dao/GenericDAOAdotante
 dependency-reduced-pom.xml
+target/classes/br/edu/sistemapet/SistemaPet.class
+target/classes/manager/AdotanteJpaController.class
+target/classes/manager/AdotanteJpaController.class

@@ -8,7 +8,6 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -26,6 +27,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "adotante")
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Adotante.findAll", query = "SELECT a FROM Adotante a"),
     @NamedQuery(name = "Adotante.findByNome", query = "SELECT a FROM Adotante a WHERE a.nome = :nome"),
@@ -57,7 +59,7 @@ public class Adotante implements Serializable {
     @Basic(optional = false)
     @Column(name = "cep")
     public String cep;
-    @OneToMany(mappedBy = "adotanteCpf", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "adotanteCpf")
     public List<Pets> petsList;
 
     public Adotante() {
@@ -124,6 +126,7 @@ public class Adotante implements Serializable {
         this.cep = cep;
     }
 
+    @XmlTransient
     public List<Pets> getPetsList() {
         return petsList;
     }

@@ -68,7 +68,7 @@ public class PetsJpaController implements Serializable {
 	        }
    }
     
-    public synchronized Pets select(Integer codigo_microchip) throws NonexistentEntityException, PreexistingEntityException
+    public synchronized Pets select(Integer codigoMicrochip) throws NonexistentEntityException, PreexistingEntityException
     {
         EntityManager em = null;
         Pets pet;
@@ -76,7 +76,7 @@ public class PetsJpaController implements Serializable {
                 em = getEntityManager();
                 em.getTransaction().begin();
                 try {
-                            pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
+                            pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigoMicrochip)
                             .getSingleResult();
             
                             pet.getCodigoMicrochip();
@@ -91,7 +91,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateAll(Integer codigo_microchip, Date dataCastracao, Date dataAdocao, BigDecimal peso) throws NonexistentEntityException, PreexistingEntityException
+    public synchronized Pets updateAll(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao, BigDecimal peso) throws NonexistentEntityException, PreexistingEntityException
     {
         EntityManager em = null;
         Pets pet;
@@ -99,7 +99,7 @@ public class PetsJpaController implements Serializable {
                 em = getEntityManager();
                 em.getTransaction().begin();
                 try {
-                    pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigo_microchip)
+                    pet = (Pets) em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class).setParameter("codigoMicrochip", codigoMicrochip)
                     .getSingleResult();
             
                     pet.getCodigoMicrochip();
@@ -122,7 +122,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateAdoptionDate(Integer codigo_microchip, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateAdoptionDate(Integer codigoMicrochip, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -131,7 +131,7 @@ public class PetsJpaController implements Serializable {
             
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
                 throw new NonexistentEntityException("Pet não encontrado");
@@ -156,7 +156,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateCastrateDate(Integer codigo_microchip, Date dataCastracao) throws NonexistentEntityException {
+    public synchronized Pets updateCastrateDate(Integer codigoMicrochip, Date dataCastracao) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -165,7 +165,7 @@ public class PetsJpaController implements Serializable {
             
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
                 throw new NonexistentEntityException("Pet não encontrado");
@@ -188,7 +188,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDates(Integer codigo_microchip, Date dataCastracao, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateDates(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -197,7 +197,7 @@ public class PetsJpaController implements Serializable {
             
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
                 throw new NonexistentEntityException("Pet não encontrado");
@@ -224,7 +224,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateWeight(Integer codigo_microchip, BigDecimal peso) throws NonexistentEntityException {
+    public synchronized Pets updateWeight(Integer codigoMicrochip, BigDecimal peso) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -233,7 +233,7 @@ public class PetsJpaController implements Serializable {
             
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
                 throw new NonexistentEntityException("Pet não encontrado");
@@ -256,6 +256,42 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
+    public synchronized Pets updateCodigo(Integer codigoMicrochipVelho, Integer codigoMicrochipNovo) throws NonexistentEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            pet = em.find(Pets.class, codigoMicrochipVelho);
+            if (pet == null) {
+                throw new NonexistentEntityException("Pet não encontrado com o Codigo: " + codigoMicrochipVelho);
+            }
+    
+            Pets novoPet = new Pets();
+            novoPet.setCodigoMicrochip(codigoMicrochipNovo);
+            novoPet.setDataAdocao(pet.getDataAdocao());
+            novoPet.setDataCastracao(pet.getDataCastracao());
+            novoPet.setPeso(pet.getPeso());
+            novoPet.setAdotanteCpf(pet.getAdotanteCpfDiferente());
+            em.persist(novoPet);
+            em.remove(pet);
+            em.getTransaction().commit();
+            
+            System.out.println("Código atualizado com sucesso");
+    
+        } catch (Exception e) {
+            // Adiciona log para erros
+            System.err.println("Erro ao atualizar código: " + e.getMessage());
+            throw new NonexistentEntityException("Erro ao atualizar código", e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+    
+        return pet;
+    }
+    
     public synchronized List<Pets> selectAll(){  
         List<Pets> list = new ArrayList<>();
         EntityManager em = null;
@@ -279,7 +315,7 @@ public class PetsJpaController implements Serializable {
     
       }
   
-    public synchronized Pets verify(Integer codigo_microchip) throws NonexistentEntityException {
+    public synchronized Pets verify(Integer codigoMicrochip) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet = null;
         try {
@@ -288,7 +324,7 @@ public class PetsJpaController implements Serializable {
     
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
             }
@@ -302,7 +338,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
     
-    public synchronized Pets adopt(Integer codigo_microchip, Date dataAdocao, String cpf) throws NonexistentEntityException {
+    public synchronized Pets adopt(Integer codigoMicrochip, Date dataAdocao, String cpf) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -311,7 +347,7 @@ public class PetsJpaController implements Serializable {
             
             try {
                 pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
-                        .setParameter("codigoMicrochip", codigo_microchip)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
                         .getSingleResult();
             } catch (NoResultException nre) {
                 throw new NonexistentEntityException("Pet não encontrado");

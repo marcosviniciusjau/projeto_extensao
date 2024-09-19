@@ -14,6 +14,7 @@ import javax.persistence.PersistenceException;
 import manager.exceptions.NonexistentEntityException;
 import manager.exceptions.PreexistingEntityException;
 import model.Adotante;
+import model.Pets;
 public class AdotanteJpaController implements Serializable {
     public AdotanteJpaController(EntityManagerFactory emf){
         this.emf = emf;
@@ -24,7 +25,7 @@ public class AdotanteJpaController implements Serializable {
     public synchronized EntityManager getEntityManager(){
         return emf.createEntityManager();
     }
-       public synchronized Adotante verify(String nome) throws NonexistentEntityException, PreexistingEntityException {
+       public synchronized Adotante verify(String CPF) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Adotante pet_adopter = null; 
         try {
@@ -32,8 +33,8 @@ public class AdotanteJpaController implements Serializable {
             em.getTransaction().begin();
     
             try {
-                pet_adopter = em.createQuery("SELECT a FROM Adotante a WHERE a.nome = :nome", Adotante.class)
-                        .setParameter("nome", nome)
+                pet_adopter = em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class)
+                        .setParameter("cpf", CPF)
                         .getSingleResult();
                       throw new  PreexistingEntityException("Adotante já existente");
             } catch (NoResultException nre) {
@@ -136,6 +137,44 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+    } finally {
+               if (em != null)
+               em.close();
+    }
+    return adotante;
+  }
+
+  public Adotante updateCPF(String cpf, String cpfNovo) throws NonexistentEntityException
+  {
+    EntityManager em = null;
+    Adotante adotante;
+    try {
+               em = getEntityManager();
+               em.getTransaction().begin();
+               adotante = em.find(Adotante.class, cpf);
+               if (adotante == null) {
+                   throw new NonexistentEntityException("Adotante não encontrado com o CPF: " + cpf);
+               }
+       
+               Adotante novoAdotante = new Adotante();
+               novoAdotante.setCpf(cpfNovo);
+               novoAdotante.setNome(adotante.getNome());
+               novoAdotante.setCep(adotante.getCep());
+               novoAdotante.setEndereco(adotante.getEndereco());
+               novoAdotante.setTelefone(adotante.getTelefone());
+               novoAdotante.setDataNascimento(adotante.getDataNascimento());
+               
+               em.persist(novoAdotante);
+               em.flush();
+               List<Pets> petsList = adotante.getPetsList();
+               for (Pets pet : petsList) {
+                  pet.setAdotanteCpf(novoAdotante.cpf);
+                  em.merge(pet); 
+               }
+               em.flush();
+               em.remove(adotante);
+               em.getTransaction().commit();
+               System.out.println("CPF atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();

@@ -18,6 +18,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
@@ -25,6 +26,7 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "pets")
+@XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Pets.findAll", query = "SELECT p FROM Pets p"),
     @NamedQuery(name = "Pets.findByDataCastracao", query = "SELECT p FROM Pets p WHERE p.dataCastracao = :dataCastracao"),
@@ -100,6 +102,10 @@ public class Pets implements Serializable {
 
     public Adotante getAdotanteCpf() {
         return adotanteCpf;
+    }
+
+    public String getAdotanteCpfDiferente() {
+        return adotanteCpf != null ? adotanteCpf.getCpf() : null;
     }
 
     public void setAdotanteCpf(String cpf) {
