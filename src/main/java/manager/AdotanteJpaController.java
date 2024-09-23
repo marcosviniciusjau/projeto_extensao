@@ -36,7 +36,7 @@ public class AdotanteJpaController implements Serializable {
                 pet_adopter = em.createQuery("SELECT a FROM Adotante a WHERE a.cpf = :cpf", Adotante.class)
                         .setParameter("cpf", CPF)
                         .getSingleResult();
-                      throw new  PreexistingEntityException("Adotante já existente");
+                      throw new  PreexistingEntityException("Adotante ja existente");
             } catch (NoResultException nre) {
             }
     
@@ -81,7 +81,7 @@ public class AdotanteJpaController implements Serializable {
 			                  throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
 		            }	
 		               em.remove(adotante);
-                       System.out.println("Adotante excluído com sucesso");
+                   System.out.println("Adotante excluido com sucesso");
 		               em.getTransaction().commit();
 	        } finally {
 		               if (em != null)
@@ -111,6 +111,8 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+               
+               System.out.println("Adotante atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();
@@ -153,7 +155,7 @@ public class AdotanteJpaController implements Serializable {
                em.getTransaction().begin();
                adotante = em.find(Adotante.class, cpf);
                if (adotante == null) {
-                   throw new NonexistentEntityException("Adotante não encontrado com o CPF: " + cpf);
+                   throw new NonexistentEntityException("Adotante nao encontrado com o CPF: " + cpf);
                }
        
                Adotante novoAdotante = new Adotante();
@@ -201,6 +203,8 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+               
+               System.out.println("Data de nascimento atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();
@@ -227,6 +231,8 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+               
+               System.out.println("Endereco atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();
@@ -253,6 +259,8 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+               
+               System.out.println("CEP atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();
@@ -279,6 +287,8 @@ public class AdotanteJpaController implements Serializable {
                            throw new NonexistentEntityException("Nenhum adotante encontrado!", enfe);
                 }	
                em.getTransaction().commit();
+               
+               System.out.println("Telefone atualizado com sucesso");
     } finally {
                if (em != null)
                em.close();
@@ -342,7 +352,7 @@ public class AdotanteJpaController implements Serializable {
             list = em.createQuery("SELECT a FROM Adotante a", Adotante.class).getResultList();
             
             if(list.isEmpty()){
-            System.out.println("Ainda não foi inserido nenhum adotante");
+            System.out.println("Ainda nao foi inserido nenhum adotante");
         }
         }catch(PersistenceException ex){
             System.out.println("Erro: "+ex);

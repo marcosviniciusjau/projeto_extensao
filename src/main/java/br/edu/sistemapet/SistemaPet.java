@@ -69,7 +69,7 @@ public class SistemaPet {
   }
   
   private void verifyIfExists(int codigoMicrochip) throws PreexistingEntityException, NonexistentEntityException{
-    var encontrado= dao.verify(codigoMicrochip);
+    var encontrado= dao.verificar(codigoMicrochip);
       if(encontrado != null){
         throw new PreexistingEntityException("Pet já existente");
       }
@@ -106,7 +106,7 @@ private void inputUpdateCodigo() throws Exception{
 
 private void inputDataCastracao() throws Exception{
   try {
-    System.out.println("Data de castração e vacinas:");
+    System.out.println("Data de castracao e vacinas:");
     var dataCastracao = entry.readLine();
     if(dataCastracao == null){
       throw new Exception("Campo obrigatório");
@@ -115,7 +115,7 @@ private void inputDataCastracao() throws Exception{
     dataCastracaoSQL = new java.sql.Date(date.getTime());     
     pets.setDataCastracao(dataCastracaoSQL);
   } catch (IOException e) {
-    throw new IOException("Erro ao ler a data de castração: " + e.getMessage());
+    throw new IOException("Erro ao ler a data de castracao: " + e.getMessage());
   } catch (DataFormatException e) {
     throw new DataFormatException("Data no formato inválido. O formato aceito é dd/mm/aaaa");
   }  catch (ParseException e) {
@@ -125,7 +125,7 @@ private void inputDataCastracao() throws Exception{
 
 private void inputDataAdocao() throws Exception{
 try {
-  System.out.println("Data de adoção:");
+  System.out.println("Data de adocao:");
   var dataAdocao = entry.readLine();
   if(dataAdocao == null){
     throw new Exception("Campo obrigatório");
@@ -134,7 +134,7 @@ try {
   dataAdocaoSQL = new java.sql.Date(date.getTime());     
   pets.setDataAdocao(dataAdocaoSQL);
 } catch (IOException e) {
-  throw new IOException("Erro ao ler a data de adoção: " + e.getMessage());
+  throw new IOException("Erro ao ler a data de adocao: " + e.getMessage());
 } catch (DataFormatException e) {
   throw new DataFormatException("Data no formato inválido. O formato aceito é dd/mm/aaaa");
 }   catch (ParseException e) {
@@ -270,7 +270,7 @@ private void inputTelefone() throws Exception{
     dataNascimentoSQL = new java.sql.Date(date.getTime());     
     adotante.setDataNascimento(dataNascimentoSQL);
   } catch (IOException e) {
-    throw new IOException("Erro ao ler a data de castração: " + e.getMessage());
+    throw new IOException("Erro ao ler a data de castracao: " + e.getMessage());
   }  catch (DataFormatException e) {
     throw new DataFormatException("Data no formato inválido. O formato aceito é dd/mm/aaaa");
   }  catch (ParseException e) {
@@ -280,9 +280,10 @@ private void inputTelefone() throws Exception{
 
   private void selectModelPets(Pets pet){
       System.out.println("Pet: "+pet.getCodigoMicrochip()+
+                    "\tPeso: " +pets.getPeso()+
                     "\tCodigo Microchip: " +pet.getCodigoMicrochip()+
-                     "\tData de castração: "+pet.getDataCastracao()+
-                     "\tData adoção: "+pet.getDataAdocao()+
+                     "\tData de castracao e vacinas: "+pet.getDataCastracao()+
+                     "\tData adocao: "+pet.getDataAdocao()+
                      "\n==========================");
 }
   
@@ -291,8 +292,8 @@ private void inputTelefone() throws Exception{
       pets = dao.select(codigoMicrochip);
       System.out.println("Pet: "+pets.getCodigoMicrochip()+
       "\tPeso: " +pets.getPeso()+
-      "\tData de castração: "+pets.getDataCastracao()+
-      "\tData adoção: "+pets.getDataAdocao()+
+      "\tData de castracao e vacinas: "+pets.getDataCastracao()+
+      "\tData adocao: "+pets.getDataAdocao()+
       "\tCPF do Adotante: "+pets.getAdotanteCpf()+
       "\n==========================");
   }
@@ -334,10 +335,10 @@ private void inputTelefone() throws Exception{
       System.out.println(
         "Quais campos voce deseja alterar?: " +
         "1-Código Microchip: " +
-        "\t2-Data castração: " +
-        "\t3- Data de adoção: " +
+        "\t2-Data castracao: " +
+        "\t3- Data de adocao: " +
         "\t4-Peso: " +
-        "\t5-Datas de castração e adoção: " +
+        "\t5-Datas de castracao e adocao: " +
         "\t6-Atualizar tudo: " +
         "\t7-Sair: " +
         "\n==========================");
@@ -358,21 +359,21 @@ private void inputTelefone() throws Exception{
           exists(codigoMicrochip);
     
           inputDataCastracao();
-          dao.updateCastrateDate(codigoMicrochip, dataCastracaoSQL);
+          dao.updateDataCastracao(codigoMicrochip, dataCastracaoSQL);
        break;
   
         case 3:
           inputCodigo();
           exists(codigoMicrochip);
           inputDataAdocao();
-          dao.updateAdoptionDate(codigoMicrochip, dataAdocaoSQL);
+          dao.updateDataAdocao(codigoMicrochip, dataAdocaoSQL);
         break;
   
         case 4: 
           inputCodigo();
           exists(codigoMicrochip);
           inputPeso();
-          dao.updateWeight(codigoMicrochip, peso);
+          dao.updatePeso(codigoMicrochip, peso);
         break;
   
         case 5: 
@@ -380,7 +381,7 @@ private void inputTelefone() throws Exception{
           exists(codigoMicrochip);
           inputDataCastracao();
           inputDataAdocao();
-          dao.updateDates(codigoMicrochip, dataCastracaoSQL, dataAdocaoSQL);
+          dao.updateDatas(codigoMicrochip, dataCastracaoSQL, dataAdocaoSQL);
          break;
   
         case 6: 
@@ -392,7 +393,7 @@ private void inputTelefone() throws Exception{
           dao.updateAll(codigoMicrochip, dataCastracaoSQL, dataAdocaoSQL, peso);
          break;
   
-        default: System.out.println("Opção inválida"); break;
+        default: System.out.println("Opcao invalida"); break;
     }
   }  
 }
@@ -467,7 +468,7 @@ private void inputTelefone() throws Exception{
           daoAdotante.updateAll(CPF, nome,dataNascimentoSQL, endereco, CEP, telefone);
          break;
   
-        default: System.out.println("Opção inválida"); break;
+        default: System.out.println("Opcao invalida"); break;
     }
   }  
   }
@@ -479,7 +480,7 @@ private void inputTelefone() throws Exception{
     System.out.println("Adotante: "+adotante.getCpf()+
     "\tCPF: " +adotante.getCpf()+
     "\tData de nascimento: "+adotante.getDataNascimento()+
-    "\tEndereço: "+adotante.getEndereco()+
+    "\tEndereco: "+adotante.getEndereco()+
     "\tCEP: "+adotante.getCep()+
     "\tTelefone: "+adotante.getTelefone()+
     "\n==========================");
@@ -514,7 +515,7 @@ private void inputTelefone() throws Exception{
     exists(codigoMicrochip);
     inputCPFAdocao();
     inputDataAdocao();
-    dao.adopt(codigoMicrochip, dataAdocaoSQL,CPF);
+    dao.adotar(codigoMicrochip, dataAdocaoSQL,CPF);
   }
           
   public synchronized void deletePet() throws Exception{
@@ -562,7 +563,7 @@ private void inputTelefone() throws Exception{
                           case 9: systemPet.adotar(); break;
                           case 10: systemPet.deletePet(); break;
                           case 11: systemPet.deleteAdotante();break;
-                          default:  System.out.println("Opção inválida"); break;
+                          default:  System.out.println("Opcao invalida"); break;
                       }
             }
   }	
