@@ -33,7 +33,8 @@ import javax.xml.bind.annotation.XmlRootElement;
     @NamedQuery(name = "Pets.findByDataCastracao", query = "SELECT p FROM Pets p WHERE p.dataCastracao = :dataCastracao"),
     @NamedQuery(name = "Pets.findByDataAdocao", query = "SELECT p FROM Pets p WHERE p.dataAdocao = :dataAdocao"),
     @NamedQuery(name = "Pets.findByCodigoMicrochip", query = "SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip"),
-    @NamedQuery(name = "Pets.findByPeso", query = "SELECT p FROM Pets p WHERE p.peso = :peso")})
+    @NamedQuery(name = "Pets.findByPeso", query = "SELECT p FROM Pets p WHERE p.peso = :peso"),
+    @NamedQuery(name = "Pets.findByDataVacinas", query = "SELECT p FROM Pets p WHERE p.dataVacinas = :dataVacinas")})
 public class Pets implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -52,9 +53,13 @@ public class Pets implements Serializable {
     @Basic(optional = false, fetch = FetchType.EAGER)
     @Column(name = "peso")
     public BigDecimal peso;
+    @Basic(optional = false)
+    @Column(name = "data_vacinas")
+    @Temporal(TemporalType.DATE)
+    public Date dataVacinas;
     @JoinColumn(name = "adotante_cpf", referencedColumnName = "cpf")
     @ManyToOne
-    public Adotante adotanteCpf;
+    public Adotantes adotanteCpf;
 
     public Pets() {
     }
@@ -63,10 +68,11 @@ public class Pets implements Serializable {
         this.codigoMicrochip = codigoMicrochip;
     }
 
-    public Pets(Integer codigoMicrochip, Date dataCastracao, BigDecimal peso) {
+    public Pets(Integer codigoMicrochip, Date dataCastracao, BigDecimal peso, Date dataVacinas) {
         this.codigoMicrochip = codigoMicrochip;
         this.dataCastracao = dataCastracao;
         this.peso = peso;
+        this.dataVacinas = dataVacinas;
     }
 
     public Date getDataCastracao() {
@@ -101,7 +107,15 @@ public class Pets implements Serializable {
         this.peso = peso;
     }
 
-    public Adotante getAdotanteCpf() {
+    public Date getDataVacinas() {
+        return dataVacinas;
+    }
+
+    public void setDataVacinas(Date dataVacinas) {
+        this.dataVacinas = dataVacinas;
+    }
+
+    public Adotantes getAdotanteCpf() {
         return adotanteCpf;
     }
 
@@ -110,7 +124,7 @@ public class Pets implements Serializable {
     }
 
     public void setAdotanteCpf(String cpf) {
-        this.adotanteCpf = new Adotante(cpf);
+        this.adotanteCpf = new Adotantes(cpf);
     }
 
     @Override
@@ -122,6 +136,7 @@ public class Pets implements Serializable {
 
     @Override
     public boolean equals(Object object) {
+        // TODO: Warning - this method won't work in the case the id fields are not set
         if (!(object instanceof Pets)) {
             return false;
         }

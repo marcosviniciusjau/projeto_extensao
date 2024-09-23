@@ -156,6 +156,40 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
+    public synchronized Pets updateDataVacinas(Integer codigoMicrochip, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
+        EntityManager em = null;
+        Pets pet;
+        try {
+            em = getEntityManager();
+            em.getTransaction().begin();
+            
+            try {
+                pet = em.createQuery("SELECT p FROM Pets p WHERE p.codigoMicrochip = :codigoMicrochip", Pets.class)
+                        .setParameter("codigoMicrochip", codigoMicrochip)
+                        .getSingleResult();
+            } catch (NoResultException nre) {
+                throw new NonexistentEntityException("Pet nao encontrado");
+            }
+            pet.getCodigoMicrochip();
+            if(pet.getAdotanteCpf() == null){
+                throw new PreexistingEntityException("Pet nao adotado");
+            }
+            pet.setDataVacinas(dataVacinas);
+
+            em.getTransaction().commit(); 
+
+            System.out.println("Data de adocao atualizada com sucesso");
+        } catch (EntityNotFoundException enfe) {
+            throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+
+        return pet;
+    }
+
     public synchronized Pets updateDataCastracao(Integer codigoMicrochip, Date dataCastracao) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
@@ -188,7 +222,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDatas(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateDatas(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -208,10 +242,11 @@ public class PetsJpaController implements Serializable {
                 throw new PreexistingEntityException("Pet nao adotado");
             }
             pet.setDataAdocao(dataAdocao);
+            pet.setDataVacinas(dataVacinas);
 
             em.getTransaction().commit(); 
             
-            System.out.println("Data de adocao e castraçao atualizada com sucesso");
+            System.out.println("Data de adocao castraçao e vacinas atualizada com sucesso");
 
         } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
