@@ -10,6 +10,7 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,7 +49,7 @@ public class Pets implements Serializable {
     @Column(name = "codigo_microchip")
     public Integer codigoMicrochip;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Basic(optional = false)
+    @Basic(optional = false, fetch = FetchType.EAGER)
     @Column(name = "peso")
     public BigDecimal peso;
     @JoinColumn(name = "adotante_cpf", referencedColumnName = "cpf")

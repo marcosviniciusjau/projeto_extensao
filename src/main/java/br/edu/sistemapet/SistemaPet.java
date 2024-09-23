@@ -280,7 +280,7 @@ private void inputTelefone() throws Exception{
 
   private void selectModelPets(Pets pet){
       System.out.println("Pet: "+pet.getCodigoMicrochip()+
-                    "\tPeso: " +pets.getPeso()+
+                    "\tPeso: " +pet.getPeso()+
                     "\tCodigo Microchip: " +pet.getCodigoMicrochip()+
                      "\tData de castracao e vacinas: "+pet.getDataCastracao()+
                      "\tData adocao: "+pet.getDataAdocao()+
