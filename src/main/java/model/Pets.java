@@ -10,7 +10,6 @@ import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -48,9 +47,9 @@ public class Pets implements Serializable {
     @Id
     @Basic(optional = false)
     @Column(name = "codigo_microchip")
-    public Integer codigoMicrochip;
+    public String codigoMicrochip;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Basic(optional = false, fetch = FetchType.EAGER)
+    @Basic(optional = false)
     @Column(name = "peso")
     public BigDecimal peso;
     @Basic(optional = false)
@@ -64,11 +63,11 @@ public class Pets implements Serializable {
     public Pets() {
     }
 
-    public Pets(Integer codigoMicrochip) {
+    public Pets(String codigoMicrochip) {
         this.codigoMicrochip = codigoMicrochip;
     }
 
-    public Pets(Integer codigoMicrochip, Date dataCastracao, BigDecimal peso, Date dataVacinas) {
+    public Pets(String codigoMicrochip, Date dataCastracao, BigDecimal peso, Date dataVacinas) {
         this.codigoMicrochip = codigoMicrochip;
         this.dataCastracao = dataCastracao;
         this.peso = peso;
@@ -91,11 +90,11 @@ public class Pets implements Serializable {
         this.dataAdocao = dataAdocao;
     }
 
-    public Integer getCodigoMicrochip() {
+    public String getCodigoMicrochip() {
         return codigoMicrochip;
     }
 
-    public void setCodigoMicrochip(Integer codigoMicrochip) {
+    public void setCodigoMicrochip(String codigoMicrochip) {
         this.codigoMicrochip = codigoMicrochip;
     }
 

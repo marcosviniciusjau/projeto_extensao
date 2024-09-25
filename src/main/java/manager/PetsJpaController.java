@@ -35,9 +35,6 @@ public class PetsJpaController implements Serializable {
                     em.getTransaction().commit();
                     System.out.println("Pet inserido com sucesso");
                } catch(Exception ex){
-                   if(pet.getCodigoMicrochip()!= null){
-                       throw new PreexistingEntityException("Pet" + pet + "ja existente", ex);
-                   }
                    throw ex;
                } finally {
                     if (em != null){
@@ -46,7 +43,7 @@ public class PetsJpaController implements Serializable {
                 }
     }
     
-    public synchronized void destroy(int codigoMicrochip) throws NonexistentEntityException
+    public synchronized void destroy(String codigoMicrochip) throws NonexistentEntityException
 	{
 	        EntityManager em = null;
 	        try {
@@ -68,7 +65,7 @@ public class PetsJpaController implements Serializable {
 	        }
    }
     
-    public synchronized Pets select(Integer codigoMicrochip) throws NonexistentEntityException, PreexistingEntityException
+    public synchronized Pets select(String codigoMicrochip) throws NonexistentEntityException, PreexistingEntityException
     {
         EntityManager em = null;
         Pets pet;
@@ -91,7 +88,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateAll(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao, BigDecimal peso) throws NonexistentEntityException, PreexistingEntityException
+    public synchronized Pets updateAll(String codigoMicrochip, Date dataVacinas, Date dataCastracao,  BigDecimal peso,Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException
     {
         EntityManager em = null;
         Pets pet;
@@ -104,6 +101,7 @@ public class PetsJpaController implements Serializable {
             
                     pet.getCodigoMicrochip();
 
+                    pet.setDataVacinas(dataVacinas);
                     pet.setDataCastracao(dataCastracao);
                     if(pet.getAdotanteCpf() == null){
                         throw new PreexistingEntityException("Pet nao adotado");
@@ -122,7 +120,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDataAdocao(Integer codigoMicrochip, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateDataAdocao(String codigoMicrochip, Date dataAdocao) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -156,7 +154,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDataVacinas(Integer codigoMicrochip, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateDataVacinas(String codigoMicrochip, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -190,7 +188,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDataCastracao(Integer codigoMicrochip, Date dataCastracao) throws NonexistentEntityException {
+    public synchronized Pets updateDataCastracao(String codigoMicrochip, Date dataCastracao) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -222,7 +220,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateDatas(Integer codigoMicrochip, Date dataCastracao, Date dataAdocao, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
+    public synchronized Pets updateDatas(String codigoMicrochip, Date dataCastracao, Date dataAdocao, Date dataVacinas) throws NonexistentEntityException, PreexistingEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -259,7 +257,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updatePeso(Integer codigoMicrochip, BigDecimal peso) throws NonexistentEntityException {
+    public synchronized Pets updatePeso(String codigoMicrochip, BigDecimal peso) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -291,7 +289,7 @@ public class PetsJpaController implements Serializable {
         return pet;
     }
 
-    public synchronized Pets updateCodigo(Integer codigoMicrochipVelho, Integer codigoMicrochipNovo) throws NonexistentEntityException {
+    public synchronized Pets updateCodigo(String codigoMicrochipVelho, String codigoMicrochipNovo) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -306,6 +304,7 @@ public class PetsJpaController implements Serializable {
             novoPet.setCodigoMicrochip(codigoMicrochipNovo);
             novoPet.setDataAdocao(pet.getDataAdocao());
             novoPet.setDataCastracao(pet.getDataCastracao());
+            novoPet.setDataVacinas(pet.getDataVacinas());
             novoPet.setPeso(pet.getPeso());
             novoPet.setAdotanteCpf(pet.getAdotanteCpfDiferente());
             em.persist(novoPet);
@@ -349,7 +348,7 @@ public class PetsJpaController implements Serializable {
     
       }
   
-    public synchronized Pets verificar(Integer codigoMicrochip) throws NonexistentEntityException {
+    public synchronized Pets verificar(String codigoMicrochip) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet = null;
         try {
@@ -371,8 +370,8 @@ public class PetsJpaController implements Serializable {
         }
         return pet;
     }
-    
-    public synchronized Pets adotar(Integer codigoMicrochip, Date dataAdocao, String cpf) throws NonexistentEntityException {
+
+    public synchronized Pets adotar(String codigoMicrochip, Date dataAdocao, String cpf) throws NonexistentEntityException {
         EntityManager em = null;
         Pets pet;
         try {
@@ -391,6 +390,7 @@ public class PetsJpaController implements Serializable {
     
             em.getTransaction().commit(); 
     
+            System.out.println("Pet adotado com sucesso");
         } catch (EntityNotFoundException enfe) {
             throw new NonexistentEntityException("Nenhum pet encontrado!", enfe);
         } finally {

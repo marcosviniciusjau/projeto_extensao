@@ -5,6 +5,7 @@ import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.zip.DataFormatException;
 
 import javax.persistence.Persistence;
@@ -31,15 +32,18 @@ public class SistemaPet {
   private static Adotantes Adotantes = new Adotantes();
   private static final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
   
-  private static int codigoMicrochip;
-  private static int codigoMicrochipNovo;
+  private static String codigoMicrochip;
+  
+  private static String codigoMicrochipNovo;
   private static BigDecimal peso;
   private java.sql.Date dataCastracaoSQL;
   private java.sql.Date dataVacinasSQL;
   private java.sql.Date dataAdocaoSQL;
+  private static String codigos;
 
   private static String nome;
   private static String CPF;
+  private static String cpfString;
   private static String CPFNovo;
   private static String endereco;
   private static String CEP;
@@ -47,7 +51,7 @@ public class SistemaPet {
   private java.sql.Date dataNascimentoSQL;
   
 
-  private void exists(int codigoMicrochip) throws NonexistentEntityException{
+  private void existe(String codigoMicrochip) throws NonexistentEntityException{
     try {
       var encontrado= dao.select(codigoMicrochip);
       if(encontrado == null){
@@ -69,7 +73,7 @@ public class SistemaPet {
     }
   }
   
-  private void verifyIfExists(int codigoMicrochip) throws PreexistingEntityException, NonexistentEntityException{
+  private void verificaSeExiste(String codigoMicrochip) throws PreexistingEntityException, NonexistentEntityException{
     var encontrado= dao.verificar(codigoMicrochip);
       if(encontrado != null){
         throw new PreexistingEntityException("Pet já existente");
@@ -79,33 +83,31 @@ public class SistemaPet {
 
   private void inputCodigo() throws Exception{
     try {
-        System.out.println("Informe o código microchip:");
-        codigoMicrochip = Integer.parseInt(entry.readLine());
-        if(codigoMicrochip < 15){
+      System.out.println("Informe o código microchip:");
+      codigoMicrochip = entry.readLine();
+      if(codigoMicrochip.length() < 15){
         throw new NumberFormatException("Código microchip inválido.");
-        }
+      }
     } catch (IOException e) {
       throw new IOException("Erro ao ler o código microchip: " + e.getMessage());
-    } catch (NumberFormatException e) {
-        throw new NumberFormatException("Código microchip inválido.");
-    }
+    } 
+  catch (NumberFormatException e) {
+    throw new NumberFormatException("Codigo microchip inválido.");
+  }
 }
 
 private void inputUpdateCodigo() throws Exception{
   try {
       System.out.println("Informe o código microchip antigo:");
-      codigoMicrochip = Integer.parseInt(entry.readLine());
-      if(codigoMicrochip < 15){
-        throw new NumberFormatException("Código microchip inválido.");
-        }
-      exists(codigoMicrochip);
+      codigoMicrochip = entry.readLine();
+      existe(codigoMicrochip);
         
       System.out.println("Informe o código microchip novo:");
-      codigoMicrochipNovo = Integer.parseInt(entry.readLine());
-      if(codigoMicrochipNovo < 15){
+      codigoMicrochipNovo = entry.readLine();
+      if(codigoMicrochipNovo.length() < 15){
         throw new NumberFormatException("Código microchip inválido.");
         }
-      verifyIfExists(codigoMicrochipNovo);
+      verificaSeExiste(codigoMicrochipNovo);
       pets.setCodigoMicrochip(codigoMicrochipNovo);
   } catch (IOException e) {
     throw new IOException("Erro ao ler o código microchip: " + e.getMessage());
@@ -116,7 +118,7 @@ private void inputUpdateCodigo() throws Exception{
 
 private void inputDataCastracao() throws Exception{
   try {
-    System.out.println("Data de castracao e vacinas:");
+    System.out.println("Data de castracao:");
     var dataCastracao = entry.readLine();
     if(dataCastracao == null){
       throw new Exception("Campo obrigatório");
@@ -308,58 +310,68 @@ private void inputTelefone() throws Exception{
   }
 }
 
-  private void selectModelPets(Pets pet){
-      System.out.println("Pet: "+pet.getCodigoMicrochip()+
-                    "\tPeso: " +pet.getPeso()+
-                    "\tCodigo Microchip: " +pet.getCodigoMicrochip()+
-                     "\tData de castracao: "+pet.getDataCastracao()+ 
-                     "\tData das vacinas: "+pets.getDataVacinas()+
-                     "\tData adocao: "+pet.getDataAdocao()+
-                     "\n==========================");
+  private void selectModelPets(Pets pets){
+    if(pets.getAdotanteCpf() != null){
+      String adotanteInfo = pets.getAdotanteCpf().toString();
+      cpfString = adotanteInfo.split("cpf=")[1].split("]")[0];
+       System.out.println("Pet: "+pets.getCodigoMicrochip()+
+                     "\tPeso: " +pets.getPeso()+
+                      "\tData de castracao: "+pets.getDataCastracao()+ 
+                      "\tData das vacinas: "+pets.getDataVacinas()+
+                      "\tData adocao: "+pets.getDataAdocao()+
+                     "\tCPF do Adotante: "+cpfString +
+                      "\n==========================");
+    }else{
+      System.out.println("Pet: "+pets.getCodigoMicrochip()+
+      "\tPeso: " +pets.getPeso()+
+       "\tData de castracao: "+pets.getDataCastracao()+ 
+       "\tData das vacinas: "+pets.getDataVacinas()+
+       "\tData adocao: "+"Pet não adotado ainda"+
+      "\tCPF do Adotante: "+"Pet não adotado ainda"+
+       "\n==========================");
+    }
+   
 }
   
   public synchronized void selectPet() throws Exception{
       inputCodigo();
-      pets = dao.select(codigoMicrochip);
-      System.out.println("Pet: "+pets.getCodigoMicrochip()+
-      "\tPeso: " +pets.getPeso()+
-      "\tData de castracao: "+pets.getDataCastracao()+
-      "\tData das vacinas: "+pets.getDataVacinas()+
-      "\tData adocao: "+pets.getDataAdocao()+
-      "\tCPF do Adotantes: "+pets.getAdotanteCpf()+
-      "\n==========================");
+      Pets pet = dao.select(codigoMicrochip);
+      if(pet.getAdotanteCpf() != null){
+        String adotanteInfo = pet.getAdotanteCpf().toString();
+        cpfString = adotanteInfo.split("cpf=")[1].split("]")[0];
+         System.out.println("Pet: "+pets.getCodigoMicrochip()+
+                       "\tPeso: " +pets.getPeso()+
+                        "\tData de castracao: "+pet.getDataCastracao()+ 
+                        "\tData das vacinas: "+pet.getDataVacinas()+
+                        "\tData adocao: "+pet.getDataAdocao()+
+                       "\tCPF do Adotante: "+cpfString +
+                        "\n==========================");
+      }
+      else{
+        System.out.println("Pet: "+pet.getCodigoMicrochip()+
+        "\tPeso: " +pet.getPeso()+
+         "\tData de castracao: "+pet.getDataCastracao()+ 
+         "\tData das vacinas: "+pet.getDataVacinas()+
+         "\tData adocao: "+"Pet não adotado ainda"+
+        "\tCPF do Adotante: "+"Pet não adotado ainda"+
+         "\n==========================");
+      }
+      
   }
     
   public synchronized void selectAllPets() throws Exception{
-      try {
         dao.selectAll().forEach(pet->{
           selectModelPets(pet);
-          });
-      } catch (Exception e) {
-        throw new NonexistentEntityException("Nenhum pet existente");
-      }        
+          });         
   }
 
   public synchronized void insertPet() throws Exception{
       inputCodigo();
-      verifyIfExists(codigoMicrochip);
+      verificaSeExiste(codigoMicrochip);
       inputPeso();
       inputDataCastracao();
+      inputDataVacinas();
       dao.create(pets);
-}
-
-  private void selectModelAdotantes(Adotantes Adotantes){
-      System.out.println("Adotantes: "+Adotantes.getNome()+
-    "\tCPF: " +Adotantes.getCpf()+
-    "\tData de nascimento: "+Adotantes.getDataNascimento()+
-    "\tEndereço: "+Adotantes.getEndereco()+
-    "\tCEP: "+Adotantes.getCep()+
-    "\tTelefone: "+Adotantes.getTelefone()+
-    "\n==========================");
-    if (!Adotantes.getPetsList().isEmpty()) {
-      System.out.println("Pets Adotados: " + Adotantes.getPetsList().size()
-      );
-  }
 }
 
   public synchronized void updatePet() throws Exception{
@@ -370,10 +382,10 @@ private void inputTelefone() throws Exception{
         "\t2-Data castracao: " +
         "\t3- Data de adocao: " +
         "\t4- Data das vacinas: "+
-        "\t4-Peso: " +
-        "\t5-Datas de castracao e adocao: " +
-        "\t6-Atualizar tudo: " +
-        "\t7-Sair: " +
+        "\t5-Peso: " +
+        "\t6-Datas de castracao e adocao: " +
+        "\t7-Atualizar tudo: " +
+        "\t8-Sair: " +
         "\n==========================");
   
     int opcao = Integer.parseInt(entry.readLine());
@@ -389,7 +401,7 @@ private void inputTelefone() throws Exception{
 
         case 2:    
           inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
     
           inputDataCastracao();
           dao.updateDataCastracao(codigoMicrochip, dataCastracaoSQL);
@@ -397,28 +409,28 @@ private void inputTelefone() throws Exception{
   
         case 3:
           inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
           inputDataAdocao();
           dao.updateDataAdocao(codigoMicrochip, dataAdocaoSQL);
         break;
   
         case 4: 
           inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
           inputDataVacinas();
           dao.updateDataVacinas(codigoMicrochip, dataVacinasSQL);
         break;
 
         case 5: 
           inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
           inputPeso();
           dao.updatePeso(codigoMicrochip, peso);
         break;
   
         case 6: 
          inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
           inputDataCastracao();
           inputDataAdocao();
           inputDataVacinas();
@@ -427,11 +439,15 @@ private void inputTelefone() throws Exception{
   
         case 7: 
           inputCodigo();
-          exists(codigoMicrochip);
+          existe(codigoMicrochip);
+          inputDataVacinas();
           inputDataCastracao();
-          inputDataAdocao();
           inputPeso();
-          dao.updateAll(codigoMicrochip, dataCastracaoSQL, dataAdocaoSQL, peso);
+          if(pets.getAdotanteCpf() == null){
+            throw new IllegalArgumentException("Pet sem adotante");
+          }
+          inputDataAdocao();
+          dao.updateAll(codigoMicrochip, dataVacinasSQL,dataCastracaoSQL, peso,dataAdocaoSQL );
          break;
   
         default: System.out.println("Opcao invalida"); break;
@@ -513,7 +529,31 @@ private void inputTelefone() throws Exception{
     }
   }  
   }
-    
+
+  @SuppressWarnings("unchecked")
+  private void selectModelAdotantes(Adotantes Adotantes) throws NonexistentEntityException, PreexistingEntityException{
+      var petsList = Adotantes.getPetsList();
+      @SuppressWarnings("rawtypes")
+      var lista = new ArrayList();
+      String pet = "";
+      for (Pets p : petsList) {
+        pet = p.getCodigoMicrochip();
+        lista.add(pet);
+    }
+    codigos = String.join(", ", lista);
+
+    System.out.println("Adotantes: "+Adotantes.getNome()+
+    "\tCPF: " +Adotantes.getCpf()+
+    "\tData de nascimento: "+Adotantes.getDataNascimento()+
+    "\tEndereço: "+Adotantes.getEndereco()+
+    "\tCEP: "+Adotantes.getCep()+
+    "\tTelefone: "+Adotantes.getTelefone()+
+    "\n==========================");
+  if (!Adotantes.getPetsList().isEmpty()) {
+    System.out.println("Pets Adotados: " + codigos
+    );
+}
+} 
   public synchronized void selectAdotantes() throws Exception{
     System.out.println("CPF");
     inputCPF();
@@ -526,14 +566,18 @@ private void inputTelefone() throws Exception{
     "\tTelefone: "+Adotantes.getTelefone()+
     "\n==========================");
     if (!Adotantes.getPetsList().isEmpty()) {
-      System.out.println("Pets Adotados: " + Adotantes.getPetsList());
+      System.out.println("Pets Adotados: " + codigos);
   }
   }
 
-  public synchronized void selectAllAdotantess() throws Exception{
+  public synchronized void selectAllAdotantes() throws Exception{
     try {
       daoAdotantes.selectAll().forEach(Adotantes->{
-        selectModelAdotantes(Adotantes);
+        try {
+          selectModelAdotantes(Adotantes);
+        } catch (NonexistentEntityException | PreexistingEntityException e) {
+          e.printStackTrace();
+        }
         });
     } catch (Exception e) {
       throw new NonexistentEntityException("Nenhum Adotantes existente");
@@ -553,15 +597,15 @@ private void inputTelefone() throws Exception{
 
   public synchronized void adotar() throws Exception{ 
     inputCodigo();
-    exists(codigoMicrochip);
+    existe(codigoMicrochip);
     inputCPFAdocao();
     inputDataAdocao();
     dao.adotar(codigoMicrochip, dataAdocaoSQL,CPF);
   }
           
   public synchronized void deletePet() throws Exception{
-            System.out.println("Codigo Microchip:");
-            int codigoMicrochip = Integer.parseInt(entry.readLine());
+            inputCodigo();
+            existe(codigoMicrochip);
             dao.destroy(codigoMicrochip);
   }
 
@@ -579,7 +623,7 @@ private void inputTelefone() throws Exception{
                 "\t2-Listar pet por codigo microchip:" +
                 "\t3-Inserir pet:" +
                 "\t4-Atualizar pet:" +
-                "\t5-Listar Adotantess:" +
+                "\t5-Listar Adotantes:" +
                 "\t6-Listar Adotantes por CPF:" +
                 "\t7-Inserir Adotantes:" +
                 "\t8-Atualizar Adotantes:" +
@@ -597,7 +641,7 @@ private void inputTelefone() throws Exception{
                           case 2: systemPet.selectPet(); break;
                           case 3: systemPet.insertPet(); break;
                           case 4: systemPet.updatePet(); break;
-                          case 5: systemPet.selectAllAdotantess(); break;
+                          case 5: systemPet.selectAllAdotantes(); break;
                           case 6: systemPet.selectAdotantes(); break;
                           case 7: systemPet.insertAdotantes(); break;
                           case 8: systemPet.updateAdotantes(); break;

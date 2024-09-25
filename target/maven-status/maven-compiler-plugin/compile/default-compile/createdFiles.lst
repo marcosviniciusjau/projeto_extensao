@@ -2,9 +2,9 @@ model\Pets.class
 manager\exceptions\TypingNumberException.class
 manager\exceptions\AdoptionException.class
 manager\exceptions\IllegalOrphanException.class
-model\Adotante.class
-manager\AdotanteJpaController.class
+model\Adotantes.class
 manager\exceptions\PreexistingEntityException.class
+manager\AdotantesJpaController.class
 br\edu\sistemapet\SistemaPet.class
 manager\exceptions\NonexistentEntityException.class
 manager\PetsJpaController.class
